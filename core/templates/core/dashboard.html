@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Dashboard</h2>
+
+{% if user.role == "ADMIN" %}
+    <p>Branches: {{ branches_count }}</p>
+    <p>Students: {{ students_count }}</p>
+    <p>Teachers: {{ teachers_count }}</p>
+{% endif %}
+
+<h3>Today's Lessons</h3>
+
+<ul>
+{% for lesson in lessons %}
+    <li>{{ lesson.start_datetime }} - {{ lesson.subject.name }}</li>
+{% endfor %}
+</ul>
+
+{% endblock %}
