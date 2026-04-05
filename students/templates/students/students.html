@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Students</h2>
+
+<table border="1">
+{% for s in students %}
+<tr>
+    <td>{{ s.first_name }} {{ s.last_name }}</td>
+    <td>{{ s.phone }}</td>
+    <td>{{ s.email }}</td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

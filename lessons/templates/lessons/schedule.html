@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Schedule</h2>
+
+<ul>
+{% for l in lessons %}
+    <li>{{ l.start_datetime }} - {{ l.subject.name }}</li>
+{% endfor %}
+</ul>
+
+{% endblock %}
