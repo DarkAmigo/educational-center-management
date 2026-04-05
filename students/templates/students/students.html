@@ -4,9 +4,18 @@
 <h2>Students</h2>
 
 <table border="1">
+<tr>
+    <th>Name</th>
+    <th>Branch</th>
+    <th>Status</th>
+    <th>Phone</th>
+    <th>Email</th>
+</tr>
 {% for s in students %}
 <tr>
     <td>{{ s.first_name }} {{ s.last_name }}</td>
+    <td>{{ s.branch.name }}</td>
+    <td>{{ s.status }}</td>
     <td>{{ s.phone }}</td>
     <td>{{ s.email }}</td>
 </tr>
