@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import F, Q
 from django.core.exceptions import ValidationError
 from branches.models import Branch, Group
 
@@ -32,6 +33,12 @@ class GroupMembership(models.Model):
 
     class Meta:
         unique_together = ('student', 'group')
+        constraints = [
+            models.CheckConstraint(
+                condition=Q(leave_date__isnull=True) | Q(leave_date__gte=F('join_date')),
+                name='groupmembership_leave_date_after_join_date',
+            ),
+        ]
 
     def clean(self):
         errors = {}

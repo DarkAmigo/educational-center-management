@@ -40,7 +40,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         if self.is_superuser:
             return Branch.objects.all()
 
-        if self.role == self.Role.ADMIN:
+        if self.is_authenticated:
             return self.assigned_branches.all()
 
         return Branch.objects.none()
@@ -49,7 +49,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         if self.is_superuser:
             return True
 
-        if self.role != self.Role.ADMIN:
+        if not self.is_authenticated:
             return False
 
         return self.assigned_branches.filter(pk=branch_id).exists()
