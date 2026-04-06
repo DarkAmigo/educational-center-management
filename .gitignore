@@ -209,3 +209,5 @@ __marimo__/
 /educational-center-management.pyproj
 /educational-center-management.pyproj.user
 /educational-center-management.slnx
+
+**/migrations/*.py

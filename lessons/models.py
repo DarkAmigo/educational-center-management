@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
-from django.db.models import Q
+from django.db.models import F, Q
 from django.utils import timezone
 
 from branches.models import Group, Subject
@@ -35,6 +35,19 @@ class LessonTemplate(models.Model):
 
     class Meta:
         ordering = ['start_date']
+        constraints = [
+            models.CheckConstraint(
+                condition=Q(start_date__lte=F('end_date')),
+                name='lessontemplate_start_date_before_end_date',
+            ),
+            models.CheckConstraint(
+                condition=(
+                    (Q(student__isnull=False) & Q(group__isnull=True)) |
+                    (Q(student__isnull=True) & Q(group__isnull=False))
+                ),
+                name='lessontemplate_student_or_group_only',
+            ),
+        ]
 
     def clean(self):
         errors = {}
@@ -134,6 +147,12 @@ class LessonTemplateSlot(models.Model):
     class Meta:
         ordering = ['weekday', 'start_time']
         unique_together = ('template', 'weekday', 'start_time', 'end_time')
+        constraints = [
+            models.CheckConstraint(
+                condition=Q(start_time__lt=F('end_time')),
+                name='lessontemplateslot_start_time_before_end_time',
+            ),
+        ]
 
     def clean(self):
         if self.start_time and self.end_time and self.start_time >= self.end_time:
@@ -160,6 +179,19 @@ class Lesson(models.Model):
 
     class Meta:
         ordering = ['start_datetime']
+        constraints = [
+            models.CheckConstraint(
+                condition=Q(start_datetime__lt=F('end_datetime')),
+                name='lesson_start_datetime_before_end_datetime',
+            ),
+            models.CheckConstraint(
+                condition=(
+                    (Q(student__isnull=False) & Q(group__isnull=True)) |
+                    (Q(student__isnull=True) & Q(group__isnull=False))
+                ),
+                name='lesson_student_or_group_only',
+            ),
+        ]
 
     def get_participant_students(self):
         if self.student_id:
