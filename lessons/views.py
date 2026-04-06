@@ -9,11 +9,13 @@ def schedule_view(request):
     user = request.user
 
     lessons = Lesson.objects.select_related(
-        "teacher", "student", "group", "subject"
+        "teacher", "student", "group", "subject", "template"
     )
 
     if user.role == User.Role.TEACHER:
         lessons = lessons.filter(teacher=user)
+    elif not user.is_superuser:
+        lessons = lessons.filter(subject__branch__in=user.get_visible_branches())
 
     return render(request, "lessons/schedule.html", {
         "lessons": lessons

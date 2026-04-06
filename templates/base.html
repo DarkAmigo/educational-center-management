@@ -13,9 +13,19 @@
 
     <a href="/students/">Students</a>
     <a href="/schedule/">Schedule</a>
+    <a href="/logout/">Logout</a>
+{% else %}
+    <a href="/login/">Login</a>
 {% endif %}
 
 <hr>
+
+{% if messages %}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+    <hr>
+{% endif %}
 
 {% block content %}{% endblock %}
 
