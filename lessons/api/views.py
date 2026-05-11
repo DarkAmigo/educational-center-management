@@ -14,6 +14,12 @@ from .serializers import (
     AttendanceSerializer,
 )
 
+from drf_spectacular.utils import extend_schema
+
+@extend_schema(
+    summary="Create lesson",
+    description="Creates a lesson with conflict detection"
+)
 
 class LessonViewSet(ModelViewSet):
 
