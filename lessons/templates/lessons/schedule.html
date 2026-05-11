@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Schedule</h2>
+
+<ul>
+{% for l in lessons %}
+    <li>
+        {{ l.start_datetime }} - {{ l.subject.name }}
+        {% if l.student %}
+            - {{ l.student }}
+        {% elif l.group %}
+            - {{ l.group }}
+        {% endif %}
+        ({{ l.status }})
+    </li>
+{% endfor %}
+</ul>
+
+{% endblock %}

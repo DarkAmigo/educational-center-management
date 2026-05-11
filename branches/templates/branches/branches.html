@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Branches</h2>
+
+<table border="1">
+<tr>
+    <th>Name</th>
+    <th>City</th>
+    <th>Address</th>
+    <th>Status</th>
+</tr>
+
+{% for b in branches %}
+<tr>
+    <td>{{ b.name }}</td>
+    <td>{{ b.city }}</td>
+    <td>{{ b.address }}</td>
+    <td>{{ b.status }}</td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}
