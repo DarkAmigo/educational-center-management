@@ -26,6 +26,9 @@ class StudentViewSet(ModelViewSet):
     def get_queryset(self):
 
         user = self.request.user
+        
+        if not user.is_authenticated:
+            return Student.objects.none()
 
         students = Student.objects.select_related("branch")
 

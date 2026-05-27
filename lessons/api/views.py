@@ -40,6 +40,9 @@ class LessonViewSet(ModelViewSet):
 
         user = self.request.user
 
+        if not user.is_authenticated:
+            return Lesson.objects.none()
+
         lessons = Lesson.objects.select_related(
             "teacher",
             "student",
@@ -69,6 +72,9 @@ class AttendanceViewSet(ModelViewSet):
     def get_queryset(self):
 
         user = self.request.user
+
+        if not user.is_authenticated:
+            return Attendance.objects.none()
 
         attendance = Attendance.objects.select_related(
             "lesson",

@@ -24,6 +24,8 @@ class BranchViewSet(ModelViewSet):
     search_fields = ["name"]
 
     def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return Branch.objects.none()
         return self.request.user.get_visible_branches()
 
 
@@ -36,6 +38,8 @@ class SubjectViewSet(ModelViewSet):
     search_fields = ["name"]
 
     def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return Subject.objects.none()
         return Subject.objects.filter(
             branch__in=self.request.user.get_visible_branches()
         )
@@ -50,6 +54,8 @@ class GroupViewSet(ModelViewSet):
     search_fields = ["name"]
 
     def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return Group.objects.none()
         return Group.objects.filter(
             branch__in=self.request.user.get_visible_branches()
         )
