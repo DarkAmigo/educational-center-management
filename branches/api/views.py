@@ -1,19 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
-
 from config.permissions import IsAdminOrReadOnly
-
-from branches.models import (
-    Branch,
-    Subject,
-    Group,
-)
-
-from .serializers import (
-    BranchSerializer,
-    SubjectSerializer,
-    GroupSerializer,
-)
-
+from branches.models import Branch, Subject, Group
+from .serializers import BranchSerializer, SubjectSerializer, GroupSerializer
 
 class BranchViewSet(ModelViewSet):
 
@@ -24,6 +12,10 @@ class BranchViewSet(ModelViewSet):
     search_fields = ["name"]
 
     def get_queryset(self):
+
+        if getattr(self, "swagger_fake_view", False):
+            return Branch.objects.none()
+
         return self.request.user.get_visible_branches()
 
 
@@ -36,6 +28,10 @@ class SubjectViewSet(ModelViewSet):
     search_fields = ["name"]
 
     def get_queryset(self):
+
+        if getattr(self, "swagger_fake_view", False):
+            return Subject.objects.none()
+
         return Subject.objects.filter(
             branch__in=self.request.user.get_visible_branches()
         )
@@ -50,6 +46,10 @@ class GroupViewSet(ModelViewSet):
     search_fields = ["name"]
 
     def get_queryset(self):
+
+        if getattr(self, "swagger_fake_view", False):
+            return Group.objects.none()
+
         return Group.objects.filter(
             branch__in=self.request.user.get_visible_branches()
         )

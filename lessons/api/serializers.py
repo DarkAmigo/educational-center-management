@@ -1,41 +1,48 @@
-from config.serializers import CleanModelSerializer
-
-from lessons.models import (
-    Lesson,
-    Attendance,
-)
 from rest_framework import serializers
-from django.core.exceptions import ValidationError
+from config.serializers import CleanModelSerializer
+from lessons.models import Lesson, Attendance, LessonTemplate, LessonTemplateSlot
+
+class LessonTemplateSlotSerializer(CleanModelSerializer):
+
+    class Meta:
+        model = LessonTemplateSlot
+        fields = "__all__"
 
 
-class LessonSerializer(serializers.ModelSerializer):
+class LessonTemplateSerializer(CleanModelSerializer):
+
+    slots = LessonTemplateSlotSerializer(
+        many=True
+    )
+
+    class Meta:
+        model = LessonTemplate
+        fields = "__all__"
+
+    def create(self, validated_data):
+
+        slots_data = validated_data.pop("slots")
+
+        template = LessonTemplate.objects.create(
+            **validated_data
+        )
+
+        for slot_data in slots_data:
+
+            LessonTemplateSlot.objects.create(
+                template=template,
+                **slot_data
+            )
+
+        template.generate_lessons()
+
+        return template
+    
+class LessonSerializer(CleanModelSerializer):
 
     class Meta:
         model = Lesson
         fields = "__all__"
-
-    def validate(self, attrs):
-        instance = self.instance
-
-        data = {}
-
-        if instance:
-            for field in Lesson._meta.fields:
-                data[field.name] = getattr(instance, field.name)
-
-        data.update(attrs)
-
-        obj = Lesson(**data)
-
-        if instance:
-            obj.pk = instance.pk
-
-        try:
-            obj.full_clean()
-        except ValidationError as e:
-            raise serializers.ValidationError(e.message_dict)
-
-        return attrs
 
 class AttendanceSerializer(CleanModelSerializer):
 

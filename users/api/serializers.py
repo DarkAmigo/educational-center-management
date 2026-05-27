@@ -2,7 +2,6 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 
-
 class PhoneTokenObtainPairSerializer(TokenObtainPairSerializer):
 
     def validate(self, attrs):

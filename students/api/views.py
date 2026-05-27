@@ -1,14 +1,9 @@
 from django.db.models import Q
-
 from rest_framework.viewsets import ModelViewSet
-
 from users.models import User
 from students.models import Student
-
 from config.permissions import IsAdminOrReadOnly
-
 from .serializers import StudentSerializer
-
 
 class StudentViewSet(ModelViewSet):
 
@@ -24,6 +19,9 @@ class StudentViewSet(ModelViewSet):
     ]
 
     def get_queryset(self):
+
+        if getattr(self, "swagger_fake_view", False):
+            return Student.objects.none()
 
         user = self.request.user
 

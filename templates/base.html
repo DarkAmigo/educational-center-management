@@ -1,33 +1,71 @@
 <!DOCTYPE html>
 <html>
-<body>
 
-{% if user.is_authenticated %}
-    <p>{{ user.phone }} ({{ user.role }})</p>
+<head>
+    <title>EduProject</title>
 
-    <a href="/dashboard/">Dashboard</a>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
 
-    {% if user.role == "ADMIN" %}
-        <a href="/branches/">Branches</a>
+<body class="bg-black text-white min-h-screen">
+
+    {% if user.is_authenticated %}
+
+    <div class="bg-zinc-900 border-b border-green-500 p-4 flex gap-4 items-center">
+
+        <p class="text-green-400 font-semibold">
+            {{ user.phone }} ({{ user.role }})
+        </p>
+
+        <a href="/dashboard/" class="hover:text-green-400">
+            Dashboard
+        </a>
+
+        {% if user.role == "ADMIN" %}
+        <a href="/branches/" class="hover:text-green-400">
+            Branches
+        </a>
+        {% endif %}
+
+        <a href="/students/" class="hover:text-green-400">
+            Students
+        </a>
+
+        <a href="/schedule/" class="hover:text-green-400">
+            Schedule
+        </a>
+
+        <a href="/logout/" class="hover:text-red-400">
+            Logout
+        </a>
+
+    </div>
+
+    {% else %}
+
+    <div class="p-4">
+        <a href="/login/" class="text-green-400 hover:text-green-300">
+            Login
+        </a>
+    </div>
+
     {% endif %}
 
-    <a href="/students/">Students</a>
-    <a href="/schedule/">Schedule</a>
-    <a href="/logout/">Logout</a>
-{% else %}
-    <a href="/login/">Login</a>
-{% endif %}
+    <div class="p-6">
 
-<hr>
+        {% if messages %}
+        {% for message in messages %}
+        <div class="bg-zinc-900 border border-green-500 rounded-lg p-3 mb-4">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
 
-{% if messages %}
-    {% for message in messages %}
-        <p>{{ message }}</p>
-    {% endfor %}
-    <hr>
-{% endif %}
+        {% block content %}
+        {% endblock %}
 
-{% block content %}{% endblock %}
+    </div>
 
 </body>
+
 </html>

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="text-3xl font-bold text-green-500 mb-6">
+    Students
+</h1>
+
+<div id="students-container" class="grid gap-4">
+</div>
+
+<script>
+
+async function loadStudents() {
+
+    const response = await fetch("/api/students/", {
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("access")
+        }
+    })
+
+    const data = await response.json()
+
+    const container = document.getElementById("students-container")
+
+    container.innerHTML = ""
+
+    data.results.forEach(student => {
+
+        container.innerHTML += `
+            <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4">
+
+                <h2 class="text-xl font-semibold">
+                    ${student.first_name} ${student.last_name}
+                </h2>
+
+                <p class="text-zinc-400">
+                    ${student.phone || ""}
+                </p>
+
+            </div>
+        `
+    })
+}
+
+loadStudents()
+
+</script>
+
+{% endblock %}

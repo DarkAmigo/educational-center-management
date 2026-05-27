@@ -1,7 +1,5 @@
 from django.core.exceptions import ValidationError as DjangoValidationError
-
 from rest_framework import serializers
-
 
 class CleanModelSerializer(serializers.ModelSerializer):
 
