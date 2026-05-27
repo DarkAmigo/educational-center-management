@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
-from datetime import timedelta
 import os
 from datetime import timedelta
 
@@ -49,6 +48,7 @@ INSTALLED_APPS = [
     'subscriptions',
     'users',
     'django_filters',
+    'drf_spectacular',
 ]
 
 MIDDLEWARE = [
@@ -153,6 +153,7 @@ REST_FRAMEWORK = {
         "rest_framework.filters.SearchFilter",
         "rest_framework.filters.OrderingFilter",
     ],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 SIMPLE_JWT = {
@@ -168,3 +169,34 @@ SIMPLE_JWT = {
 AUTHENTICATION_BACKENDS = [
     "users.backends.PhoneBackend",
 ]
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "EduProject API",
+    "DESCRIPTION": "REST API documentation for education management system",
+    "VERSION": "1.0.0",
+
+    "SERVE_INCLUDE_SCHEMA": False,
+
+    # JWT support in Swagger
+    "COMPONENT_SPLIT_REQUEST": True,
+}
+
+SPECTACULAR_SETTINGS["SECURITY"] = [
+    {
+        "BearerAuth": []
+    }
+]
+
+SPECTACULAR_SETTINGS["AUTHENTICATION_WHITELIST"] = [
+    "rest_framework_simplejwt.authentication.JWTAuthentication",
+]
+
+SPECTACULAR_SETTINGS.update({
+    "SECURITY_SCHEMES": {
+        "BearerAuth": {
+            "type": "http",
+            "scheme": "bearer",
+            "bearerFormat": "JWT",
+        }
+    }
+})
