@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'lessons',
     'students',
     'subscriptions',
-    'users'
+    'users',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -64,14 +65,14 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # глобальні шаблони, напр base.html
-        'APP_DIRS': True,                   # шукає шаблони в apps
+        'DIRS': [BASE_DIR / 'templates'],  
+        'APP_DIRS': True,                   
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',  # <- ВАЖЛИВО
+                'django.contrib.messages.context_processors.messages',  
             ],
         },
     },
@@ -143,6 +144,13 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
+    ],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 20,
+    "DEFAULT_FILTER_BACKENDS": [
+        "django_filters.rest_framework.DjangoFilterBackend",
+        "rest_framework.filters.SearchFilter",
+        "rest_framework.filters.OrderingFilter",
     ],
 }
 
