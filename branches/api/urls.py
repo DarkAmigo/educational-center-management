@@ -1,10 +1,5 @@
 from rest_framework.routers import DefaultRouter
-
-from .views import (
-    BranchViewSet,
-    SubjectViewSet,
-    GroupViewSet,
-)
+from .views import BranchViewSet, SubjectViewSet, GroupViewSet
 
 router = DefaultRouter()
 

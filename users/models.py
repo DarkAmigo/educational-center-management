@@ -32,7 +32,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
 
     USERNAME_FIELD = 'phone'
-    REQUIRED_FIELDS = ['first_name', 'last_name', 'role']
+    REQUIRED_FIELDS = []
 
     objects = UserManager()
 

@@ -168,6 +168,7 @@ SIMPLE_JWT = {
 
 AUTHENTICATION_BACKENDS = [
     "users.backends.PhoneBackend",
+    "django.contrib.auth.backends.ModelBackend",
 ]
 
 SPECTACULAR_SETTINGS = {
@@ -192,11 +193,9 @@ SPECTACULAR_SETTINGS["AUTHENTICATION_WHITELIST"] = [
 ]
 
 SPECTACULAR_SETTINGS.update({
-    "SECURITY_SCHEMES": {
-        "BearerAuth": {
-            "type": "http",
-            "scheme": "bearer",
-            "bearerFormat": "JWT",
-        }
+    "ENUM_NAME_OVERRIDES": {
+        "LessonStatusEnum": "lessons.models.Lesson.Status",
+        "AttendanceStatusEnum": "lessons.models.Attendance.Status",
+        "TemplateStatusEnum": "lessons.models.LessonTemplate.Status",
     }
 })

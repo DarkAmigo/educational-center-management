@@ -1,14 +1,8 @@
 from config.serializers import CleanModelSerializer
-
-from branches.models import (
-    Branch,
-    Subject,
-    Group,
-)
-
+from branches.models import Branch, Subject, Group
 
 class BranchSerializer(CleanModelSerializer):
-
+    
     class Meta:
         model = Branch
         fields = "__all__"
