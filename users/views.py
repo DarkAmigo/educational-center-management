@@ -10,14 +10,14 @@ def login_view(request):
         phone = request.POST.get("phone", "").strip()
         password = request.POST.get("password", "")
 
-        user = authenticate(request, username=phone, password=password)
+        user = authenticate(request, phone=phone, password=password)
         if user is not None and user.is_active:
             login(request, user)
             return redirect("dashboard")
 
         messages.error(request, "Invalid phone or password.")
 
-    return render(request, "login.html")
+    return render(request, "users/login.html")
 
 
 def logout_view(request):

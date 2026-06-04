@@ -6,12 +6,16 @@ from .api_views import (
     PhoneLoginAPIView,
     PhoneRefreshAPIView,
     TeacherRoleCheckAPIView,
+    TokenObtainPairView, 
+    TokenRefreshView,
 )
 from .views import login_view, logout_view
 
 urlpatterns = [
     path("login/", login_view, name="login"),
     path("logout/", logout_view, name="logout"),
+    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/auth/login/", PhoneLoginAPIView.as_view(), name="api-login"),
     path("api/auth/refresh/", PhoneRefreshAPIView.as_view(), name="api-refresh"),
     path("api/auth/logout/", LogoutAPIView.as_view(), name="api-logout"),

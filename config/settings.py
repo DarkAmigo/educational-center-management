@@ -86,9 +86,13 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "education_center",
+        "USER": "postgres",
+        "PASSWORD": "postgres",
+        "HOST": "db",
+        "PORT": "5432",
     }
 }
 
@@ -178,15 +182,30 @@ SPECTACULAR_SETTINGS = {
 
     "SERVE_INCLUDE_SCHEMA": False,
 
-    # JWT support in Swagger
     "COMPONENT_SPLIT_REQUEST": True,
-}
 
-SPECTACULAR_SETTINGS["SECURITY"] = [
-    {
-        "BearerAuth": []
+    "SECURITY": [{"BearerAuth": []}],
+
+    "COMPONENTS": {
+        "securitySchemes": {
+            "BearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+            }
+        }
+    },
+
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+
+    "ENUM_NAME_OVERRIDES": {
+        "LessonStatusEnum": "lessons.models.Lesson.Status",
+        "AttendanceStatusEnum": "lessons.models.Attendance.Status",
+        "TemplateStatusEnum": "lessons.models.LessonTemplate.Status",
     }
-]
+}
 
 SPECTACULAR_SETTINGS["AUTHENTICATION_WHITELIST"] = [
     "rest_framework_simplejwt.authentication.JWTAuthentication",
