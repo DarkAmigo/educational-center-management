@@ -1,6 +1,7 @@
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from django.contrib.auth import authenticate
 from rest_framework import serializers
+from .serializers import UserInfoSerializer
 
 class PhoneTokenObtainPairSerializer(TokenObtainPairSerializer):
 
