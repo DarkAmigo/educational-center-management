@@ -31,6 +31,15 @@ class LessonTestDataMixin:
         self.starts_at = timezone.make_aware(datetime(2026, 6, 8, 10, 0))
         self.ends_at = self.starts_at + timedelta(hours=1)
 
+    def create_admin(self, phone="+380991112255"):
+        return User.objects.create_user(
+            phone=phone,
+            password="StrongPass123",
+            first_name="Admin",
+            last_name=phone[-4:],
+            role=User.Role.ADMIN,
+        )
+
     def create_teacher(self, phone):
         return User.objects.create_user(
             phone=phone,
@@ -76,6 +85,41 @@ class LessonTestDataMixin:
         }
         fields.update(extra_fields)
         return Lesson(**fields)
+
+
+class LessonPermissionTests(LessonTestDataMixin, APITestCase):
+    def post_lesson(self, user):
+        self.client.force_authenticate(user=user)
+        return self.client.post(
+            reverse("api-lessons-list"),
+            {
+                "teacher": self.teacher.pk,
+                "student": self.student.pk,
+                "subject": self.subject.pk,
+                "start_datetime": self.starts_at.isoformat(),
+                "end_datetime": self.ends_at.isoformat(),
+            },
+        )
+
+    def test_admin_can_create_lesson(self):
+        response = self.post_lesson(self.create_admin())
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(
+            Lesson.objects.filter(
+                teacher=self.teacher,
+                student=self.student,
+                subject=self.subject,
+                start_datetime=self.starts_at,
+                end_datetime=self.ends_at,
+            ).exists()
+        )
+
+    def test_teacher_cannot_create_lesson(self):
+        response = self.post_lesson(self.teacher)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(Lesson.objects.count(), 0)
 
 
 class LessonConflictTests(LessonTestDataMixin, TestCase):
