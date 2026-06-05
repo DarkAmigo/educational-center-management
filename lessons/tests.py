@@ -2,15 +2,18 @@ from datetime import date, datetime, timedelta
 
 from django.core.exceptions import ValidationError
 from django.test import TestCase
+from django.urls import reverse
 from django.utils import timezone
+from rest_framework import status
+from rest_framework.test import APITestCase
 
 from branches.models import Branch, Subject
-from lessons.models import Lesson
+from lessons.models import Attendance, Lesson
 from students.models import Student
 from users.models import User
 
 
-class LessonConflictTests(TestCase):
+class LessonTestDataMixin:
     def setUp(self):
         self.branch = Branch.objects.create(
             name="Main branch",
@@ -74,6 +77,8 @@ class LessonConflictTests(TestCase):
         fields.update(extra_fields)
         return Lesson(**fields)
 
+
+class LessonConflictTests(LessonTestDataMixin, TestCase):
     def test_teacher_conflict(self):
         self.create_lesson(student=self.student)
         lesson = self.build_lesson(student=self.other_student)
@@ -108,3 +113,93 @@ class LessonConflictTests(TestCase):
         lesson = self.build_lesson()
 
         lesson.full_clean()
+
+
+class AttendanceAPITests(LessonTestDataMixin, APITestCase):
+    def post_attendance(self, lesson, student, attendance_status, user=None):
+        self.client.force_authenticate(user=user or self.teacher)
+        return self.client.post(
+            reverse("api-attendance-list"),
+            {
+                "lesson": lesson.pk,
+                "student": student.pk,
+                "status": attendance_status,
+            },
+        )
+
+    def test_mark_attendance(self):
+        lesson = self.create_lesson()
+
+        response = self.post_attendance(
+            lesson,
+            self.student,
+            Attendance.Status.PRESENT,
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        attendance = Attendance.objects.get(lesson=lesson, student=self.student)
+        self.assertEqual(attendance.status, Attendance.Status.PRESENT)
+        lesson.refresh_from_db()
+        self.assertEqual(lesson.status, Lesson.Status.COMPLETED)
+
+    def test_teacher_can_mark_own_lesson(self):
+        lesson = self.create_lesson(teacher=self.teacher)
+
+        response = self.post_attendance(
+            lesson,
+            self.student,
+            Attendance.Status.PRESENT,
+            user=self.teacher,
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(
+            Attendance.objects.filter(
+                lesson=lesson,
+                student=self.student,
+                status=Attendance.Status.PRESENT,
+            ).exists()
+        )
+
+    def test_teacher_cannot_mark_other_lesson(self):
+        lesson = self.create_lesson(teacher=self.other_teacher)
+
+        response = self.post_attendance(
+            lesson,
+            self.student,
+            Attendance.Status.PRESENT,
+            user=self.teacher,
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertFalse(
+            Attendance.objects.filter(
+                lesson=lesson,
+                student=self.student,
+            ).exists()
+        )
+
+    def test_duplicate_attendance_updates_record(self):
+        lesson = self.create_lesson()
+        self.post_attendance(
+            lesson,
+            self.student,
+            Attendance.Status.PRESENT,
+        )
+
+        response = self.post_attendance(
+            lesson,
+            self.student,
+            Attendance.Status.ABSENT,
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            Attendance.objects.filter(
+                lesson=lesson,
+                student=self.student,
+            ).count(),
+            1,
+        )
+        attendance = Attendance.objects.get(lesson=lesson, student=self.student)
+        self.assertEqual(attendance.status, Attendance.Status.ABSENT)

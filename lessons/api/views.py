@@ -1,6 +1,8 @@
+from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.exceptions import PermissionDenied
-from drf_spectacular.utils import extend_schema, extend_schema_view 
+from rest_framework.response import Response
+from drf_spectacular.utils import extend_schema, extend_schema_view
 from users.models import User
 from lessons.models import Lesson, Attendance, LessonTemplate
 from config.permissions import IsAdminOrReadOnly, CanManageAttendance
@@ -50,6 +52,38 @@ class AttendanceViewSet(ModelViewSet):
             return attendance.filter(lesson__teacher=user)
 
         return attendance.filter(lesson__subject__branch__in=user.get_visible_branches())
+
+    def create(self, request, *args, **kwargs):
+
+        lesson_id = request.data.get("lesson")
+        student_id = request.data.get("student")
+        instance = None
+
+        if lesson_id and student_id:
+            instance = Attendance.objects.filter(
+                lesson_id=lesson_id,
+                student_id=student_id,
+            ).first()
+
+        serializer = self.get_serializer(
+            instance,
+            data=request.data,
+        )
+        serializer.is_valid(raise_exception=True)
+
+        if instance:
+            self.perform_update(serializer)
+            return Response(
+                serializer.data,
+                status=status.HTTP_200_OK,
+            )
+
+        self.perform_create(serializer)
+        return Response(
+            serializer.data,
+            status=status.HTTP_201_CREATED,
+            headers=self.get_success_headers(serializer.data),
+        )
 
     def perform_create(self, serializer):
         lesson = serializer.validated_data["lesson"]
