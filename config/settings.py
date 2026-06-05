@@ -34,6 +34,10 @@ ALLOWED_HOSTS = [
     "educational-center-management.onrender.com",
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://educational-center-management.onrender.com",
+]
+
 
 # Application definition
 
