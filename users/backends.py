@@ -1,16 +1,21 @@
-from django.contrib.auth.backends import BaseBackend
+from django.contrib.auth.backends import ModelBackend 
 from .models import User
 
+class PhoneBackend(ModelBackend):
 
-class PhoneBackend(BaseBackend):
+    def authenticate(self, request, phone=None, password=None, **kwargs):
+        if phone is None:
+            phone = kwargs.get('username')
 
-    def authenticate(self, request, phone=None, password=None):
+        if not phone:
+            return None
+
         try:
             user = User.objects.get(phone=phone)
         except User.DoesNotExist:
             return None
 
-        if user.check_password(password):
+        if user.check_password(password) and self.user_can_authenticate(user):
             return user
 
         return None

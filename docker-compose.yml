@@ -11,6 +11,8 @@ services:
   backend:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
+    environment:
+      - DB_HOST=db
     volumes:
       - .:/app
     ports:
