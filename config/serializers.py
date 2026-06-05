@@ -11,6 +11,8 @@ class CleanModelSerializer(serializers.ModelSerializer):
 
         if self.instance:
             for field in model_class._meta.fields:
+                if field.primary_key:
+                    continue
                 data[field.name] = getattr(self.instance, field.name)
 
         data.update(attrs)
@@ -19,6 +21,7 @@ class CleanModelSerializer(serializers.ModelSerializer):
 
         if self.instance:
             obj.pk = self.instance.pk
+            obj._state.adding = False
 
         try:
             obj.full_clean()
