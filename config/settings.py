@@ -86,15 +86,22 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    "default": dj_database_url.config(
-        default=os.environ.get(
-            'DATABASE_URL', 
-            'postgres://postgres:postgres@localhost:5432/education_center'
-        ),
-        conn_max_age=600
-    )
-}
+if os.environ.get('DATABASE_URL'):
+    DATABASES = {
+        'default': dj_database_url.config(conn_max_age=600)
+    }
+else:
+    # Налаштування СУТО для твого локального Docker
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': 'education_center',      
+            'USER': 'postgres',              
+            'PASSWORD': 'postgres',          
+            'HOST': 'db',                    
+            'PORT': '5432',
+        }
+    }
 
 
 # Password validation

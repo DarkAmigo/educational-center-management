@@ -2,6 +2,16 @@ from rest_framework.viewsets import ModelViewSet
 from config.permissions import IsAdminOrReadOnly
 from branches.models import Branch, Subject, Group
 from .serializers import BranchSerializer, SubjectSerializer, GroupSerializer
+from drf_spectacular.utils import extend_schema, extend_schema_view
+
+@extend_schema_view(
+    list=extend_schema(tags=['Branches']),
+    retrieve=extend_schema(tags=['Branches']),
+    create=extend_schema(tags=['Branches']),
+    update=extend_schema(tags=['Branches']),
+    partial_update=extend_schema(tags=['Branches']),
+    destroy=extend_schema(tags=['Branches']),
+)
 
 class BranchViewSet(ModelViewSet):
 
@@ -18,7 +28,7 @@ class BranchViewSet(ModelViewSet):
 
         return self.request.user.get_visible_branches()
 
-
+@extend_schema(tags=['Subjects'])
 class SubjectViewSet(ModelViewSet):
 
     serializer_class = SubjectSerializer
@@ -36,7 +46,7 @@ class SubjectViewSet(ModelViewSet):
             branch__in=self.request.user.get_visible_branches()
         )
 
-
+@extend_schema(tags=['Groups'])
 class GroupViewSet(ModelViewSet):
 
     serializer_class = GroupSerializer
