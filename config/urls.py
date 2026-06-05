@@ -41,3 +41,17 @@ urlpatterns = [
     path("swagger/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
     path("docs/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
 ]
+
+from django.contrib.auth import get_user_model
+import os
+
+User = get_user_model()
+
+if os.environ.get('DATABASE_URL') and not User.objects.filter(phone='+12025550147').exists():
+    User.objects.create_superuser(
+        phone='+12025550147',      
+        password='K7!mQ2#vL9@xR4',   
+        first_name='Admin',
+        last_name='Main'
+    )
+    print("=== SUPERUSER WITH PHONE CREATED SUCCESSFULLY ===")
