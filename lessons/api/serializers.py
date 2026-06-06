@@ -2,12 +2,18 @@ from rest_framework import serializers
 from config.serializers import CleanModelSerializer
 from lessons.models import Lesson, Attendance, LessonTemplate, LessonTemplateSlot
 
-class LessonTemplateSlotSerializer(CleanModelSerializer):
+class LessonTemplateSlotSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = LessonTemplateSlot
-        fields = "__all__"
-        read_only_fields = ("template",)
+        exclude = ("template",)
+
+    def validate(self, attrs):
+        if attrs["start_time"] >= attrs["end_time"]:
+            raise serializers.ValidationError({
+                "end_time": "End time must be later than start time."
+            })
+        return attrs
 
 class LessonTemplateSerializer(CleanModelSerializer):
 
