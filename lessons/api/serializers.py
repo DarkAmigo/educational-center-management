@@ -7,7 +7,7 @@ class LessonTemplateSlotSerializer(CleanModelSerializer):
     class Meta:
         model = LessonTemplateSlot
         fields = "__all__"
-
+        read_only_fields = ("template",)
 
 class LessonTemplateSerializer(CleanModelSerializer):
 
